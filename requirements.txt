@@ -1,0 +1,4 @@
+openai
+python-telegram-bot
+# python3==3.9.7
+django
