@@ -1,1 +1,1 @@
-web: gunicorn TelegramHookConnection.wsgi
+web: gunicorn TelegramHookConnection.wsgi --bind 0.0.0.0:$PORT
