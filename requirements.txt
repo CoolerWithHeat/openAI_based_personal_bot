@@ -1,4 +1,4 @@
 openai
 python-telegram-bot
-# python3==3.9.7
+gunicorn>=20.0,<21.0
 django
