@@ -2,3 +2,4 @@ openai
 python-telegram-bot
 gunicorn>=20.0,<21.0
 django
+django-cors-headers
