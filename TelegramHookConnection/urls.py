@@ -6,10 +6,15 @@ import json, os, asyncio
 from . import PersonalAI
 from telegram import Bot
 
+
+
 locationDetails = {
     "University": {'latitude':41.320566, 'longitude': 69.261249},
     "Residential": {'latitude': 41.328892, 'longitude': 69.256050},
 }
+
+ConnectionToken = os.environ.get('BOT_TOKEN')
+developersChat = 6089655614
 
 def getLocationIndex(locationSign):
     if locationSign == 'University':
@@ -23,7 +28,7 @@ async def Location_Asked(message):
     return locationKeyword
 
 async def SendResponseBack(chat_id, message):
-    bot = Bot(token=os.environ.get('BOT_TOKEN'))
+    bot = Bot(token=ConnectionToken)
     alertMessage = await bot.send_message(chat_id, text="loading... it may take couple of seconds depending on server load.")
     AI_response = PersonalAI.Request_Question(message)
 
@@ -42,7 +47,7 @@ def Parse_Telegram_Hook_Input(DictData):
     senderDetailsBase = BaseData['from']
     
     # Main Details Needed For Response Down Below
-    senderName = senderDetailsBase['first_name'] or senderDetailsBase.get('first_name', None)
+    senderName = senderDetailsBase.get('first_name', None)
     RequestedMessage = BaseData['text']
     chatID = BaseData['chat']['id']
     
@@ -56,9 +61,26 @@ def GetTelegramUpdate(request):
     asyncio.run(SendResponseBack(processed_data['chat_id'], processed_data['message']))
     return JsonResponse({"data_accepted": True})
 
+
+async def ConsultingAlert(rawData):
+    bot = Bot(token=ConnectionToken)
+    sender = rawData.get('sender', None)
+    email = rawData.get('email', None)
+    consultancyType = rawData.get('selectedService', None)
+    await bot.send_message(developersChat, text=f"A new consulting has been appointed!\n{sender} registered for {consultancyType}\nclient's contact: {email}")
+
+@csrf_exempt
+def RegisterConsulting(request):
+    arrivedData = json.loads(request.body)
+    from_consulting = arrivedData.get("consulting", None)
+    if from_consulting:
+        asyncio.run(ConsultingAlert(arrivedData)) 
+    return JsonResponse({"data_accepted": True})
+
 urlpatterns = [
 
     path('admin/', admin.site.urls),
     path("FetchUpdates/", GetTelegramUpdate),
+    path("consulting-registration/", RegisterConsulting),
     
 ]
