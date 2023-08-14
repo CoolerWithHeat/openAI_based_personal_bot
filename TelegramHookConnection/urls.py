@@ -78,9 +78,7 @@ def RegisterConsulting(request):
     return JsonResponse({"data_accepted": True})
 
 urlpatterns = [
-
     path('admin/', admin.site.urls),
     path("FetchUpdates/", GetTelegramUpdate),
     path("consulting-registration/", RegisterConsulting),
-    
 ]
